@@ -34,4 +34,8 @@ subprojects {
         testImplementation 'org.mockito:mockito-core:4.8.0'
         testImplementation 'org.awaitility:awaitility:4.2.0'
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
