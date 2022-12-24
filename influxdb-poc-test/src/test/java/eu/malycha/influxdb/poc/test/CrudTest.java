@@ -3,11 +3,14 @@ package eu.malycha.influxdb.poc.test;
 import com.influxdb.client.DeleteApi;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,6 +19,8 @@ import java.time.temporal.ChronoUnit;
 
 
 class CrudTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrudTest.class);
 
     static InfluxDBClient influxDBClient;
     static String org = "dev";
@@ -57,8 +62,16 @@ class CrudTest {
     }
 
     @Test
-    void queryRecord() {
+    void queryRecord() throws Exception {
+        String flux = "from(bucket: \"db0\") |> range(start:0)";
 
+        QueryApi queryApi = influxDBClient.getQueryApi();
+
+        queryApi.queryRaw(flux, (cancellable, line) -> {
+           LOGGER.info("Response: {}", line);
+        });
+
+        Thread.sleep(5000);
     }
 
     @Test
