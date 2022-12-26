@@ -5,7 +5,10 @@ import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
+import com.influxdb.client.domain.InfluxQLQuery;
 import com.influxdb.client.domain.WritePrecision;
+import com.influxdb.client.InfluxQLQueryApi;
+import com.influxdb.query.InfluxQLQueryResult;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 
 class CrudTest {
@@ -42,6 +46,7 @@ class CrudTest {
         WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
 
         Exposure exposure = Exposure.newBuilder()
+            .withKey(UUID.randomUUID().toString())
             .withCurrency("USD")
             .withPortfolio("Pocket")
             .withTime(Instant.now())
@@ -75,7 +80,26 @@ class CrudTest {
     }
 
     @Test
-    void queryRecordKeys() {
+    void queryRecordKeys() throws Exception {
+        String queryString = "show tag values from \"exposure\" with key=\"key\"";
 
+        InfluxQLQuery query = new InfluxQLQuery(queryString, bucket).setPrecision(InfluxQLQuery.InfluxQLPrecision.MILLISECONDS);
+
+        InfluxQLQueryApi queryApi = influxDBClient.getInfluxQLQueryApi();
+
+        InfluxQLQueryResult result = queryApi.query(query, (columnName, rawValue, resultIndex, seriesName) -> switch (columnName) {
+            case "time" -> Instant.ofEpochSecond(Long.parseLong(rawValue));
+            default -> rawValue;
+        });
+
+        for (InfluxQLQueryResult.Result resultResult : result.getResults()) {
+            LOGGER.info("Index: {}", resultResult.getIndex());
+            for (InfluxQLQueryResult.Series series : resultResult.getSeries()) {
+                LOGGER.info("Columns: {}", series.getColumns());
+                for (InfluxQLQueryResult.Series.Record record : series.getValues()) {
+                    LOGGER.info("Values: {}", record.getValueByKey("value"));
+                }
+            }
+        }
     }
 }

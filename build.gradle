@@ -21,7 +21,7 @@ subprojects {
         // OpenAPI
         implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
         // Influxdb
-        implementation 'com.influxdb:influxdb-client-java:6.3.0'
+        implementation 'com.influxdb:influxdb-client-java:6.7.0'
 
         // Utils
         implementation 'com.google.guava:guava:31.1-jre'

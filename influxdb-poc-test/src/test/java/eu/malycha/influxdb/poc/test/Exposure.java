@@ -15,6 +15,9 @@ public class Exposure {
     Instant time;
 
     @Column(tag = true)
+    String key;
+
+    @Column(tag = true)
     String currency;
 
     @Column(tag = true)
@@ -25,6 +28,7 @@ public class Exposure {
 
     private Exposure(Builder builder) {
         setTime(builder.time);
+        setKey(builder.key);
         setCurrency(builder.currency);
         setPortfolio(builder.portfolio);
         setValue(builder.value);
@@ -49,6 +53,14 @@ public class Exposure {
 
     public void setTime(Instant time) {
         this.time = time;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getCurrency() {
@@ -114,6 +126,7 @@ public class Exposure {
 
     public static final class Builder {
         private Instant time;
+        private String key;
         private String currency;
         private String portfolio;
         private BigDecimal value;
@@ -123,6 +136,11 @@ public class Exposure {
 
         public Builder withTime(Instant val) {
             time = val;
+            return this;
+        }
+
+        public Builder withKey(String val) {
+            key = val;
             return this;
         }
 
