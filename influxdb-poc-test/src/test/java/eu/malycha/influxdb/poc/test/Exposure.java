@@ -26,6 +26,10 @@ public class Exposure {
     @Column
     BigDecimal value;
 
+    public Exposure() {
+        // Empty
+    }
+
     private Exposure(Builder builder) {
         setTime(builder.time);
         setKey(builder.key);

@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -72,11 +73,10 @@ class CrudTest {
 
         QueryApi queryApi = influxDBClient.getQueryApi();
 
-        queryApi.queryRaw(flux, (cancellable, line) -> {
-           LOGGER.info("Response: {}", line);
-        });
-
-        Thread.sleep(5000);
+        List<Exposure> exposures = queryApi.query(flux, Exposure.class);
+        for (Exposure exposure : exposures) {
+            LOGGER.info("{}: {} {}", exposure.getKey(), exposure.getValue(), exposure.getCurrency());
+        }
     }
 
     @Test
